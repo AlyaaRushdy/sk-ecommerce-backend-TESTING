@@ -14,6 +14,8 @@ conn.on("error", (err) => console.log("connection failed", err.message));
 // middlewares
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(cors()); // Enable CORS
+
 app.use(express.json());
 
 
