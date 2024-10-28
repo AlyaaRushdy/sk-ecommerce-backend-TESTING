@@ -13,6 +13,11 @@ conn.on("error", (err) => console.log("connection failed", err.message));
 
 // middlewares
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.json());
+
+
 //routing
+app.use("/products", require("./routes/product.routes"));
 
 module.exports = app;
