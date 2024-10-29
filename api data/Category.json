@@ -1,0 +1,47 @@
+[
+  {
+    "_comment": "get all category",
+    "method": "get",
+    "url": "http://localhost:5000/categories"
+  },
+
+  {
+    "_comment": "get category by id",
+    "method": "get",
+    "url": "http://localhost:5000/categories/:id"
+  },
+
+  {
+    "_comment": "add new category",
+    "method": "post",
+    "url": "http://localhost:5000/categories",
+    "optionalFields": "description imageUrl"
+  },
+  {
+    "categoryTitle": "Body Oils",
+    "description": "Suitable for all Skin Types",
+    "imageUrl": "",
+    "stock": 20,
+    "createdBy": "admin1"
+  },
+
+  {
+    "_comment": "update a category",
+    "method": "put",
+    "url": "http://localhost:5000/categories",
+    "optionalFields": "description imageUrl"
+  },
+  {
+    "categoryTitle": "Body Oils",
+    "description": "Suitable for all Skin Types",
+    "imageUrl": "",
+    "stock": 20,
+    "createdBy": "admin1"
+  },
+
+  {
+    "_comment": "delete category by id",
+    "method": "delete",
+    "url": "http://localhost:5000/categories/:id"
+  }
+]
