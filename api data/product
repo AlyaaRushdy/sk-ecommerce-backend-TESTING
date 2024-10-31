@@ -1,0 +1,59 @@
+to store new product:
+method : POST
+url : http://localhost:5000/products
+
+# JSON Body
+
+#* OLD
+# {
+#   "sku": "123",                    # string , required
+#   "title": "New product",           # string , required
+#   "base": 100,                     # Number , required
+#   "discount": 10,                  # Number , optional
+#   "description": "This is new product", #string , optional
+#   "categoryId": "category-id",   # string , optional till now
+#   "quantity": 50,                # Number , required , default : 1
+#   "scent": "scent",               # string , optional
+#   "volume": "volume",            # string , optional
+#   "rating": 4,                   # Number , optional
+#   "status": "available"          # string , required
+# }
+
+#* NEW
+{
+  "sku": "123",                    
+  "title": "hydration oil",           
+  "base": 200,     
+  "discount":50,               
+  "description": "hydration oil with vanilla scent",
+  "categoryId": "672098b489aee63b91ccbe5e",    
+  "stock":7,                 
+  "scent": "vanilla",              
+  "volume": "120ml"
+}
+
+
+# you can add image from (form data)
+# the key is called (images )
+
+
+
+to get all product:
+
+method : GET
+url : http://localhost:5000/products
+
+
+
+
+to delete product:
+
+method : DELETE
+url : http://localhost:5000/products/(id)
+
+
+to update product:
+
+method : PUT
+url : http://localhost:5000/products/(id)
+
