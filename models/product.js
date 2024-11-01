@@ -15,7 +15,7 @@ var productsSchema = new Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
-      required: false,
+      required: true,
     },
     stock: { type: Number, required: true },
     scent: { type: String, required: false },
@@ -23,6 +23,9 @@ var productsSchema = new Schema(
     gender: { type: String, required: false },
     rating: { type: Number, default: 0 },
     status: { type: String, default: "in-stock" },
+    ingredients:[{type:String, required:true}],
+    using:[{type:String, required:true}]
+
   },
 
   { timestamps: true }
@@ -38,3 +41,6 @@ productsSchema.pre(["find", "findById", "save"], function (next) {
 });
 
 module.exports = mongoose.model("Product", productsSchema);
+
+
+
