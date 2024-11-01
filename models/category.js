@@ -4,12 +4,12 @@ const { Schema } = mongoose;
 const categorySchema = new Schema(
   {
     categoryTitle: { type: String, required: true },
+    code: { type: String, required: true },
     description: { type: String, required: false },
-    imageUrl: [
-      { type: String, required: false }], 
-    stock: { type: Number, default: 0 }, 
+    imageUrl: [{ type: String, required: false }],
+    stock: { type: Number, default: 0 },
     startingPrice: { type: String, required: false },
-    createdBy: { type: String, required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: "Admin", required: true },
   },
   { timestamps: true }
 );

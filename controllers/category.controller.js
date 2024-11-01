@@ -1,6 +1,6 @@
 const Category = require("../models/category");
-const Product = require("../models/product"); 
-const Admin = require('../models/admin')
+const Product = require("../models/product");
+const Admin = require("../models/admin");
 const mongoose = require("mongoose");
 
 // Retrieve all categories
@@ -65,9 +65,64 @@ function show(req, res) {
     });
 }
 
+// Retrieve a single category and related products
+function getCategoryByCode(req, res) {
+  const code = req.params.code;
+  Category.findOne({ code: code })
+    .then((category) => {
+      if (!category) {
+        return res.status(404).json({
+          message: "Category Not Found",
+        });
+      }
+
+      // Find products related to this category
+      Product.find({ categoryId: category._id })
+        .then((products) => {
+          res.status(200).json({
+            message: "Category and Related Products Retrieved Successfully",
+            category: category,
+            products: products.map((product) => {
+              return {
+                id: product._id,
+                sku: product.sku,
+                title: product.title,
+                basePrice: product.price.base,
+                priceAfterDiscount: product.price.afterDiscount,
+                discountPercentage: product.price.discount,
+                image: product.images[0],
+                stock: product.stock,
+                status: product.status,
+                categoryId: product.categoryId._id,
+                categoryTitle: product.categoryId.categoryTitle,
+                scent: product.scent,
+                volume: product.volume,
+                rating: product.rating,
+                createdAt: product.createdAt,
+              };
+            }),
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid Category ID" });
+      } else {
+        res.status(500).json({
+          error: err,
+        });
+      }
+    });
+}
+
 // Create a new category
 async function store(req, res) {
-  const { categoryTitle, description ,stock , createdBy} = req.body;
+  const { categoryTitle, description, stock, createdBy } = req.body;
   const imageUrl = req.files?.map((file) => file.path);
   try {
     // Create a new category
@@ -79,25 +134,25 @@ async function store(req, res) {
       createdBy,
     });
 
-    const savedCategory = await newCategory.save()
-    .then((category)=>{
-      console.log(category);
-    }).catch((err) =>{
-      console.error(err);
-    })
+    const savedCategory = await newCategory
+      .save()
+      .then((category) => {
+        console.log(category);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     return res.status(201).json({
       message: "Category Created Successfully",
       category: savedCategory,
     });
   } catch (error) {
-   
     return res.status(500).json({
       message: "An error occurred",
       error: error.message,
     });
   }
 }
-
 
 // Update a category and recalculate product stock and starting price
 function update(req, res) {
@@ -155,7 +210,6 @@ function update(req, res) {
     });
 }
 
-
 // Delete a category
 function destroy(req, res) {
   const id = req.params.id;
@@ -187,4 +241,5 @@ module.exports = {
   store,
   update,
   destroy,
+  getCategoryByCode,
 };
