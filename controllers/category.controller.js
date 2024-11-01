@@ -68,7 +68,7 @@ function show(req, res) {
 // Create a new category
 async function store(req, res) {
   const { categoryTitle, description ,stock , createdBy} = req.body;
-  const imageUrl = req.files.map((file) => file.path);
+  const imageUrl = req.files?.map((file) => file.path);
   try {
     // Create a new category
     const newCategory = new Category({
