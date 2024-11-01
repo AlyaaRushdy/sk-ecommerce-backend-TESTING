@@ -34,6 +34,9 @@ function store(req, res) {
     stock: req.body.stock,
     scent: req.body.scent,
     volume: req.body.volume,
+    ingredients: req.body.ingredients,
+    using: req.body.using,
+    gender:req.body.gender
   });
   product
     .save()
@@ -89,6 +92,9 @@ async function update(req, res) {
       stock: req.body.stock || product.stock,
       scent: req.body.scent,
       volume: req.body.volume,
+      ingredients: req.body.ingredients,
+      using: req.body.using,
+      gender:req.body.gender,
       status: stockStatus(req.body.stock),
     };
 
@@ -117,6 +123,7 @@ async function update(req, res) {
 function show(req, res) {
   const id = req.params.id;
   Product.findById(id)
+    .populate("categoryId", "categoryTitle _id")
     .then((product) => {
       if (!product) {
         return res.status(404).json({
@@ -125,7 +132,27 @@ function show(req, res) {
       }
       res.status(200).json({
         message: "Product Retrieved Successfully",
-        product: product,
+        product: {
+          id: product._id,
+          sku: product.sku,
+          title: product.title,
+          description: product.description,
+          basePrice: product.price.base,
+          priceAfterDiscount: product.price.afterDiscount,
+          discountPercentage: product.price.discount,
+          images: product.images,
+          stock: product.stock,
+          status: product.status,
+          categoryId: product.categoryId._id,
+          categoryTitle: product.categoryId.categoryTitle,
+          scent: product.scent,
+          volume: product.volume,
+          rating: product.rating,
+          createdAt: product.createdAt,
+          ingredients: product.ingredients,
+          using: product.using,
+          gender: product.gender,
+        },
       });
     })
     .catch((err) => {
@@ -160,6 +187,7 @@ function index(req, res) {
               id: product._id,
               sku: product.sku,
               title: product.title,
+              description: product.description,
               basePrice: product.price.base,
               priceAfterDiscount: product.price.afterDiscount,
               discountPercentage: product.price.discount,
@@ -172,12 +200,16 @@ function index(req, res) {
               volume: product.volume,
               rating: product.rating,
               createdAt: product.createdAt,
+              ingredients: product.ingredients,
+              using: product.using,
+              gender: product.gender,
             };
           }),
         });
       }
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json({ error: err });
     });
 }
