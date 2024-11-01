@@ -29,7 +29,9 @@ url : http://localhost:5000/products
   "categoryId": "672098b489aee63b91ccbe5e",    
   "stock":7,                 
   "scent": "vanilla",              
-  "volume": "120ml"
+  "volume": "120ml",
+  "ingredients":"coconut"       # array (required)
+  "using":"put the sunscreen on..." # array (required)
 }
 
 
