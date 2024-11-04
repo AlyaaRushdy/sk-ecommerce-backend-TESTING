@@ -19,7 +19,6 @@ const corsOptions = {
 };
 
 // middlewares
-app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.json());
 app.use(cors(corsOptions)); // Enable CORS
 
