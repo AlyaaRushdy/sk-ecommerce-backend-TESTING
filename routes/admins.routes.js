@@ -3,6 +3,7 @@ const express = require("express"),
   controller = require("../controllers/admin.controller"),
   middleware = require("../middlewares/admin.middleware"),
   { authenticateAdminToken } = require("../middlewares/auth.middleware");
+const { uploadSingle } = require("../utils/multer.config");
 
 router.get("/", controller.index);
 router.get("/email", middleware.getAdminByEmail, controller.show);
@@ -31,7 +32,7 @@ router.put(
   "/:id",
   authenticateAdminToken,
   middleware.getAdminById,
-  middleware.upload.single("profileImage"),
+  uploadSingle("profileImage"),
   controller.updateData
 );
 

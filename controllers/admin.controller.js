@@ -3,6 +3,7 @@ require("dotenv").config();
 const Admin = require("../models/admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { uploadSingleImage } = require("../utils/imageUpload");
 
 function index(req, res) {
   // if (res.role == "owner") {
@@ -65,10 +66,6 @@ function show(req, res) {
 function addNewAdmin(req, res) {
   // if (res.role == "owner") {
   const { email, password, name } = req.body;
-  console.log(req.body);
-  console.log("name: ", name);
-  console.log("email: ", email);
-  console.log("password: ", password);
 
   if (!password || !email || !name) {
     return res.status(400).json({
@@ -155,11 +152,11 @@ function createOwner(req, res) {
   });
 }
 
-function updateData(req, res) {
+async function updateData(req, res) {
   if (res.admin._id == res.adminId) {
     const { name } = req.body;
-    const profileImage = req.file?.path;
-
+    const profileImage =
+      req.file && (await uploadSingleImage(req.file, "admins"));
     const adminFields = { name, profileImage };
 
     Object.keys(adminFields).forEach(
