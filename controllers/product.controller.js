@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const mongoose = require("mongoose");
+const { uploadMultipleImages } = require("../utils/imageUpload");
 
 const priceAfterDiscount = (originalPrice, discount) => {
   if (discount) {
@@ -17,26 +18,31 @@ const stockStatus = (quantity) => {
   } else return "in-stock";
 };
 
-function store(req, res) {
-  const imagePaths = req.files ? req.files.map((file) => file.path) : []; // get paths of all uploaded images
-
+async function store(req, res) {
+  if (req.files.length == 0) {
+    return res.status(400).json({
+      message: "product images are required",
+    });
+  }
   const product = new Product({
-    images: imagePaths,
+    images:
+      req.files.length > 0 &&
+      (await uploadMultipleImages(req.files, "products")),
     sku: req.body.sku,
     title: req.body.title,
+    description: req.body.description,
     price: {
       base: req.body.base,
       discount: req.body.discount,
       afterDiscount: priceAfterDiscount(req.body.base, req.body.discount),
     },
-    description: req.body.description,
     categoryId: req.body.categoryId,
     stock: req.body.stock,
     scent: req.body.scent,
     volume: req.body.volume,
     ingredients: req.body.ingredients,
     using: req.body.using,
-    gender:req.body.gender
+    gender: req.body.gender,
   });
   product
     .save()
@@ -57,8 +63,6 @@ function store(req, res) {
 
 async function update(req, res) {
   const id = req.params.id;
-  const imagePaths = req.files ? req.files.map((file) => file.path) : []; // get paths of all uploaded images
-
   const product = await Product.findById(id)
     .then(res)
     .catch((err) => {
@@ -79,7 +83,10 @@ async function update(req, res) {
     };
 
     const updatedData = {
-      images: imagePaths,
+      images:
+        req.files.length > 0
+          ? await uploadMultipleImages(req.files, "products")
+          : product.images,
       sku: req.body.sku,
       title: req.body.title,
       price: {
@@ -94,7 +101,7 @@ async function update(req, res) {
       volume: req.body.volume,
       ingredients: req.body.ingredients,
       using: req.body.using,
-      gender:req.body.gender,
+      gender: req.body.gender,
       status: stockStatus(req.body.stock),
     };
 

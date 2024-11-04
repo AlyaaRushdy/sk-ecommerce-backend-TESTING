@@ -10,8 +10,8 @@ var productsSchema = new Schema(
       discount: { type: Number, default: 0 },
       afterDiscount: { type: Number, required: false },
     },
-    description: { type: String, required: false },
-    images: [{ type: String, required: false }],
+    description: { type: String, required: true },
+    images: [{ type: String, required: true }],
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
@@ -23,9 +23,8 @@ var productsSchema = new Schema(
     gender: { type: String, required: false },
     rating: { type: Number, default: 0 },
     status: { type: String, default: "in-stock" },
-    ingredients:[{type:String, required:true}],
-    using:[{type:String, required:true}]
-
+    ingredients: [{ type: String, required: true }],
+    using: [{ type: String, required: true }],
   },
 
   { timestamps: true }
@@ -41,6 +40,3 @@ productsSchema.pre(["find", "findById", "save"], function (next) {
 });
 
 module.exports = mongoose.model("Product", productsSchema);
-
-
-

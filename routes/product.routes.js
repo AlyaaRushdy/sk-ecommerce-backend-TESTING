@@ -1,19 +1,12 @@
-
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const ProductController = require('../controllers/product.controller');
-const middleware = require('../middlewares/product.middleware');
+const ProductController = require("../controllers/product.controller");
+const { uploadArray } = require("../utils/multer.config");
 
-router.post('/',
-    middleware.upload, 
-    ProductController.store);
-
-router.put('/:id',
-    middleware.upload, 
-    ProductController.update);
-
-router.get('/', ProductController.index);
-router.get('/:id', ProductController.show);
-router.delete('/:id', ProductController.destroy);
+router.post("/", uploadArray("images", 5), ProductController.store);
+router.put("/:id", uploadArray("images", 5), ProductController.update);
+router.get("/", ProductController.index);
+router.get("/:id", ProductController.show);
+router.delete("/:id", ProductController.destroy);
 
 module.exports = router;
