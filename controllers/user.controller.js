@@ -3,6 +3,7 @@ require("dotenv").config();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { uploadSingleImage } = require("../utils/imageUpload");
 
 function index(req, res) {
   User.find({})
@@ -105,10 +106,11 @@ function register(req, res) {
   });
 }
 
-function updateData(req, res) {
+async function updateData(req, res) {
   if (res.user._id == res.userId) {
     const { fname, lname, birthDay, gender, address, phone } = req.body;
-    const profileImage = req.file?.path;
+    const profileImage =
+      req.file && (await uploadSingleImage(req.file, "users"));
 
     const userFields = {
       fname,
@@ -129,7 +131,6 @@ function updateData(req, res) {
         message: "no data provided.. please add the data you want to add",
       });
     }
-
     User.updateOne(res.user, userFields).then(() => {
       return res.status(200).json({
         message: "User Updated Successfully",
@@ -148,7 +149,6 @@ function setStatusToBanned(req, res) {
   if (res.adminId) {
     if (res.user.accountStatus == "active") {
       User.updateOne(res.user, { accountStatus: "banned" }).then(() => {
-        // index(req, res);
         return res.status(200).json({
           message: "User account status set to banned successfully",
         });

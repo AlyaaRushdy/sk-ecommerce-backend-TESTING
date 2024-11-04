@@ -6,6 +6,7 @@ const express = require("express"),
     authenticateAdminToken,
     authenticateUserToken,
   } = require("../middlewares/auth.middleware");
+const { uploadSingle } = require("../utils/multer.config");
 
 router.get("/", controller.index);
 router.get("/email", middleware.getUserByEmail, controller.show);
@@ -40,8 +41,7 @@ router.put(
   "/:id",
   authenticateUserToken,
   middleware.getUserById,
-  middleware.upload.single("profileImage"),
+  uploadSingle("profileImage"),
   controller.updateData
 );
-
 module.exports = router;
