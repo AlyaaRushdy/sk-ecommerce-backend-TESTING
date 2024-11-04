@@ -22,7 +22,8 @@
     "description": "Suitable for all Skin Types",
     "imageUrl": "",
     "stock": 20,
-    "createdBy": "admin1"
+    "createdBy": "adminID",
+    "code": "bodyOils"
   },
 
   {
@@ -36,7 +37,8 @@
     "description": "Suitable for all Skin Types",
     "imageUrl": "",
     "stock": 20,
-    "createdBy": "admin1"
+    "createdBy": "adminID",
+    "code": "bodyOils"
   },
 
   {

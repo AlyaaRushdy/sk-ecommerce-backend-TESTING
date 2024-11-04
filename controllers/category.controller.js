@@ -1,7 +1,7 @@
 const Category = require("../models/category");
 const Product = require("../models/product");
-const Admin = require("../models/admin");
 const mongoose = require("mongoose");
+const { uploadSingleImage } = require("../utils/imageUpload");
 
 // Retrieve all categories
 function index(req, res) {
@@ -122,26 +122,35 @@ function getCategoryByCode(req, res) {
 
 // Create a new category
 async function store(req, res) {
-  const { categoryTitle, description, stock, createdBy } = req.body;
-  const imageUrl = req.files?.map((file) => file.path);
+  const { categoryTitle, description, stock, code } = req.body;
+
+  if (!categoryTitle) {
+    return res.status(400).json({
+      message: "title is required",
+    });
+  } else if (!code) {
+    return res.status(400).json({
+      message: "code is required",
+    });
+  } else if (!req.file) {
+    return res.status(400).json({
+      message: "image is required",
+    });
+  }
+
   try {
     // Create a new category
     const newCategory = new Category({
       categoryTitle,
       description,
-      imageUrl,
+      imageUrl: req.file && (await uploadSingleImage(req.file, "categories")),
       stock,
-      createdBy,
+      code,
+      createdBy: res.adminId,
     });
 
-    const savedCategory = await newCategory
-      .save()
-      .then((category) => {
-        console.log(category);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const savedCategory = await newCategory.save();
+
     return res.status(201).json({
       message: "Category Created Successfully",
       category: savedCategory,
@@ -155,51 +164,17 @@ async function store(req, res) {
 }
 
 // Update a category and recalculate product stock and starting price
-function update(req, res) {
+async function update(req, res) {
   const id = req.params.id;
-  const { categoryTitle, description, stock, createdBy } = req.body; // Use categoryTitle
+  const { categoryTitle, description, code } = req.body;
 
-  const updatedData = {
-    categoryTitle: categoryTitle, // Fixed field name
-    description: description,
-    stock: stock, // Include stock if it's meant to be updated
-    createdBy: createdBy, // Include createdBy if it's meant to be updated
-    imageUrl: req.files.map((file) => file.path), // Handle uploaded images
-  };
-
-  Category.findByIdAndUpdate(id, updatedData, { new: true })
+  const category = await Category.findById(id)
     .then((category) => {
       if (!category) {
         return res.status(404).json({
           message: "Category Not Found",
         });
-      }
-
-      // Update product stock and starting price based on products in this category
-      Product.find({ categoryId: id })
-        .then((products) => {
-          const totalStock = products.reduce(
-            (total, product) => total + product.quantity,
-            0
-          );
-          const prices = products.map((product) => product.price.base);
-          const startingPrice = prices.length
-            ? `$${Math.min(...prices)} to $${Math.max(...prices)}`
-            : "N/A";
-
-          category.productStock = totalStock;
-          category.startingPrice = startingPrice;
-
-          category.save().then((updatedCategory) => {
-            res.status(200).json({
-              message: "Category Updated Successfully",
-              category: updatedCategory,
-            });
-          });
-        })
-        .catch((err) => {
-          res.status(500).json({ error: err });
-        });
+      } else return category;
     })
     .catch((err) => {
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -207,6 +182,43 @@ function update(req, res) {
       } else {
         res.status(500).json({ error: err });
       }
+    });
+
+  // Update product stock and starting price based on products in this category
+  const productRelatedFields = await Product.find({ categoryId: id })
+    .then((products) => {
+      const totalStock = products.reduce(
+        (total, product) => total + product.stock,
+        0
+      );
+      const prices = products.map((product) => product.price.base);
+      const startingPrice = prices.length
+        ? `$${Math.min(...prices)} to $${Math.max(...prices)}`
+        : "N/A";
+
+      return { totalStock, startingPrice };
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
+
+  const updatedData = {
+    categoryTitle,
+    description,
+    imageUrl: req.file && (await uploadSingleImage(req.file, "categories")),
+    stock: productRelatedFields.totalStock,
+    startingPrice: productRelatedFields.startingPrice,
+    code,
+  };
+
+  Category.updateOne({ _id: category._id }, updatedData)
+    .then(() => {
+      return res.status(200).json({
+        message: "Category Updated Successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
 }
 
