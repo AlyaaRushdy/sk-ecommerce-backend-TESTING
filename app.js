@@ -32,5 +32,5 @@ app.use("/shippingCosts", require("./routes/shippingCost.routes"));
 app.use("/products", require("./routes/product.routes"));
 app.use("/categories", require("./routes/category.routes"));
 app.use("/reviews", require("./routes/review.routes"));
-
+app.yse("/address", require("./routes/address.routes"));
 module.exports = app;
