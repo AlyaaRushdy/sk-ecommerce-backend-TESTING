@@ -241,7 +241,10 @@ async function login(req, res) {
       .compare(password, user.password)
       .then((isIdentical) => {
         if (isIdentical) {
-          const token = jwt.sign({ userId: user._id }, process.env.AUTH_SECRET);
+          const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            process.env.AUTH_SECRET
+          );
           res.header("Authorization", `Bearer ${token}`);
 
           User.updateOne(

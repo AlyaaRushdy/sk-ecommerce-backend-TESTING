@@ -6,14 +6,18 @@ function authenticateUserToken(req, res, next) {
   const token = authHeader?.split(" ")[1];
   if (token) {
     jwt.verify(token, process.env.AUTH_SECRET, (err, user) => {
-      // console.log(user);
       if (err) {
         return res.status(403).json({
           message: "Forbidden Access!",
         });
-      } else {
+      } else if (user.userId) {
         res.userId = user.userId;
+        res.role = user.role;
         next();
+      } else {
+        return res.status(403).json({
+          message: "Forbidden Access! you're not a user",
+        });
       }
     });
   } else {
@@ -32,10 +36,14 @@ function authenticateAdminToken(req, res, next) {
         return res.status(403).json({
           message: "Forbidden Access!",
         });
-      } else {
+      } else if (admin.adminId) {
         res.adminId = admin.adminId;
         res.role = admin.role;
         next();
+      } else {
+        return res.status(403).json({
+          message: "Forbidden Access! you're not an Admin",
+        });
       }
     });
   } else {
