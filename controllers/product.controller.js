@@ -139,27 +139,7 @@ function show(req, res) {
       }
       res.status(200).json({
         message: "Product Retrieved Successfully",
-        product: {
-          id: product._id,
-          sku: product.sku,
-          title: product.title,
-          description: product.description,
-          basePrice: product.price.base,
-          priceAfterDiscount: product.price.afterDiscount,
-          discountPercentage: product.price.discount,
-          images: product.images,
-          stock: product.stock,
-          status: product.status,
-          categoryId: product.categoryId._id,
-          categoryTitle: product.categoryId.categoryTitle,
-          scent: product.scent,
-          volume: product.volume,
-          rating: product.rating,
-          createdAt: product.createdAt,
-          ingredients: product.ingredients,
-          using: product.using,
-          gender: product.gender,
-        },
+        product: product,
       });
     })
     .catch((err) => {
@@ -189,29 +169,7 @@ function index(req, res) {
           method: "GET",
           url: "http://localhost:5000/products",
           statusCode: "200",
-          products: products.map((product) => {
-            return {
-              id: product._id,
-              sku: product.sku,
-              title: product.title,
-              description: product.description,
-              basePrice: product.price.base,
-              priceAfterDiscount: product.price.afterDiscount,
-              discountPercentage: product.price.discount,
-              image: product.images[0],
-              stock: product.stock,
-              status: product.status,
-              categoryId: product.categoryId._id,
-              categoryTitle: product.categoryId.categoryTitle,
-              scent: product.scent,
-              volume: product.volume,
-              rating: product.rating,
-              createdAt: product.createdAt,
-              ingredients: product.ingredients,
-              using: product.using,
-              gender: product.gender,
-            };
-          }),
+          products: products,
         });
       }
     })

@@ -82,25 +82,7 @@ function getCategoryByCode(req, res) {
           res.status(200).json({
             message: "Category and Related Products Retrieved Successfully",
             category: category,
-            products: products.map((product) => {
-              return {
-                id: product._id,
-                sku: product.sku,
-                title: product.title,
-                basePrice: product.price.base,
-                priceAfterDiscount: product.price.afterDiscount,
-                discountPercentage: product.price.discount,
-                image: product.images[0],
-                stock: product.stock,
-                status: product.status,
-                categoryId: product.categoryId._id,
-                categoryTitle: product.categoryId.categoryTitle,
-                scent: product.scent,
-                volume: product.volume,
-                rating: product.rating,
-                createdAt: product.createdAt,
-              };
-            }),
+            products: products,
           });
         })
         .catch((err) => {

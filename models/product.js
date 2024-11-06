@@ -39,4 +39,31 @@ productsSchema.pre(["find", "findById", "save"], function (next) {
   next();
 });
 
+productsSchema.set("toJSON", {
+  transform: function (document, returnedObj) {
+    return {
+      id: returnedObj._id,
+      sku: returnedObj.sku,
+      title: returnedObj.title,
+      description: returnedObj.description,
+      basePrice: returnedObj.price.base,
+      priceAfterDiscount: returnedObj.price.afterDiscount,
+      discountPercentage: returnedObj.price.discount,
+      images: returnedObj.images,
+      stock: returnedObj.stock,
+      status: returnedObj.status,
+      categoryId: returnedObj.categoryId._id,
+      categoryTitle: returnedObj.categoryId.categoryTitle,
+      scent: returnedObj.scent,
+      volume: returnedObj.volume,
+      rating: returnedObj.rating,
+      ingredients: returnedObj.ingredients,
+      using: returnedObj.using,
+      gender: returnedObj.gender,
+      createdAt: returnedObj.createdAt,
+      updatedAt: returnedObj.updatedAt,
+    };
+  },
+});
+
 module.exports = mongoose.model("Product", productsSchema);
