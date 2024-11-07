@@ -1,9 +1,7 @@
-require("dotenv").config();
-
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { uploadSingleImage } = require("../utils/imageUpload");
+const { generateUserToken } = require("../utils/jwt");
 
 function index(req, res) {
   User.find({})
@@ -65,9 +63,9 @@ function show(req, res) {
 }
 
 function register(req, res) {
-  const { fname, lname, phone, email, password } = req.body;
+  const { fname, lname, email, password } = req.body;
 
-  if (!fname || !lname || !phone || !password || !email) {
+  if (!fname || !lname || !password || !email) {
     return res.status(400).json({
       message: "All fields are required",
     });
@@ -78,23 +76,23 @@ function register(req, res) {
       fname: fname,
       lname: lname,
       email: email,
-      phone: phone,
       password: hashedPassword,
+      lastLoginDate: new Date(),
     });
 
     user
       .save()
-      .then(() => {
+      .then((user) => {
+        const token = generateUserToken(user);
+        res.header("Authorization", `Bearer ${token}`);
         return res.status(201).json({
-          message: "User Registered Successfully",
+          message: `Account created successfully, Welcome ${user.fname}!`,
         });
       })
       .catch((err) => {
         if (err.code == 11000) {
           return res.status(409).json({
-            message: "email already exists, try loging in instead",
-            errorCode: err.code,
-            errorMessage: err.message,
+            message: "email already exists, try logging in instead",
           });
         }
         return res.status(500).json({
@@ -241,10 +239,7 @@ async function login(req, res) {
       .compare(password, user.password)
       .then((isIdentical) => {
         if (isIdentical) {
-          const token = jwt.sign(
-            { userId: user._id, role: user.role },
-            process.env.AUTH_SECRET
-          );
+          const token = generateUserToken(user);
           res.header("Authorization", `Bearer ${token}`);
 
           User.updateOne(

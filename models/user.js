@@ -19,7 +19,7 @@ const userSchema = new Schema(
         country: { type: String, required: true },
       },
     ],
-    phone: { type: String, required: true, unique: true },
+    phone: { type: String, unique: true },
     profileImage: { type: String },
     favourites: [{ type: Schema.Types.ObjectId, ref: "Product" }],
     latestOrderId: { type: Schema.Types.ObjectId, ref: "Order" },

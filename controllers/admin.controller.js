@@ -4,6 +4,7 @@ const Admin = require("../models/admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { uploadSingleImage } = require("../utils/imageUpload");
+const { generateAdminToken } = require("../utils/jwt");
 
 function index(req, res) {
   // if (res.role == "owner") {
@@ -90,7 +91,7 @@ function addNewAdmin(req, res) {
       .catch((err) => {
         if (err.code == 11000) {
           return res.status(409).json({
-            message: "email already exists, try loging in instead",
+            message: "email already exists",
             errorCode: err.code,
             errorMessage: err.message,
           });
@@ -268,10 +269,8 @@ async function login(req, res) {
       .compare(password, admin.password)
       .then((isIdentical) => {
         if (isIdentical) {
-          const token = jwt.sign(
-            { adminId: admin._id, role: admin.role },
-            process.env.AUTH_SECRET
-          );
+          const token = generateAdminToken(admin);
+          res.header("Authorization", `Bearer ${token}`);
 
           Admin.updateOne(
             { _id: admin._id },
@@ -284,7 +283,6 @@ async function login(req, res) {
             });
           });
 
-          res.header("Authorization", `Bearer ${token}`);
           res.status(200).json({
             message: `Welcome Back ${admin.name}!`,
           });
