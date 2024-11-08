@@ -3,7 +3,6 @@ const {Schema} = mongoose;
 
 const AddressSchema = new Schema(
     {
-        userId : String,
         address : String,
         city: String,
         pinCode: String,
